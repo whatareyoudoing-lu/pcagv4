@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Poison Candy - Duel & Flashcards</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #0f021f;
+      background: radial-gradient(circle at 50% 15%, #290d4f 0%, #130227 60%, #070010 100%);
+      color: #f1f5f9;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px 10px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Top Universal Header */
+    .top-header {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      background: #15042a;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      padding: 6px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .brand-icon {
+      font-size: 18px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #e9d5ff;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-ver {
+      font-size: 10px;
+      background: #059669;
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    /* Mode Navigation Tabs (Game vs Flashcards) */
+    .nav-tabs {
+      display: flex;
+      background: #20063e;
+      border: 1px solid #7c3aed;
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .nav-tab-btn {
+      padding: 4px 10px;
+      border: none;
+      background: transparent;
+      color: #c084fc;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-tab-btn.active {
+      background: #7c3aed;
+      color: #ffffff;
+      box-shadow: 0 1px 6px rgba(124, 58, 237, 0.6);
+    }
+
+    .action-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-chip {
+      background: #230845;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #e2e8f0;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .btn-chip:hover {
+      background: #380d6e;
+      border-color: #c084fc;
+    }
+
+    .btn-chip.bgm-active {
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    /* BGM Control & Track Selector */
+    .bgm-control-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #230845;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .bgm-select {
+      background: #180332;
+      border: 1px solid #7c3aed;
+      color: #e9d5ff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .bgm-select option {
+      background: #180332;
+      color: #f1f5f9;
+    }
+
+    .bgm-control-wrap input[type="range"] {
+      width: 55px;
+      height: 4px;
+      accent-color: #a855f7;
+      cursor: pointer;
+    }
+
+    .btn-chip.danger {
+      background: #500724;
+      border-color: #be123c;
+      color: #fecdd3;
+    }
+
+    .selector-bar {
+      width: 100%;
+      max-width: 960px;
+      margin: 3px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .pills-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .pills-label {
+      font-size: 11px;
+      font-weight: bold;
+      color: #a855f7;
+      min-width: 48px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pills-container {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+
+    .pill-btn {
+      padding: 3px 9px;
+      border-radius: 6px;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      background: #1d0537;
+      color: #d8b4fe;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .pill-btn.active {
+      background: #9333ea;
+      border-color: #c084fc;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(147, 51, 234, 0.5);
+    }
+
+    .grid-toggle-box {
+      margin-left: auto;
+      display: flex;
+      background: #1a0433;
+      border: 1px solid #6b21a8;
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .grid-btn {
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: #a855f7;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .grid-btn.active {
+      background: #06b6d4;
+      color: #ffffff;
+    }
+
+    /* Player Status & Prompt */
+    .players-bar {
+      width: 100%;
+      max-width: 960px;
+      margin: 2px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .player-card {
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #190533;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0.5;
+    }
+
+    .player-card.active-p1 {
+      border: 2px solid #06b6d4;
+      background: #200845;
+      opacity: 1;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    }
+
+    .player-card.active-p2 {
+      border: 2px solid #f59e0b;
+      background: #200845;
+      opacity: 1;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+
+    .p-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .p-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .p1-avatar { background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; color: #67e8f9; }
+    .p2-avatar { background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fcd34d; }
+
+    .p-title { font-size: 11px; font-weight: bold; }
+    .p-status { font-size: 10px; color: #94a3b8; }
+
+    .instruction-strip {
+      width: 100%;
+      max-width: 960px;
+      margin: 2px auto;
+      background: #220743;
+      border: 1px solid #a855f7;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #06ffa5;
+      flex-shrink: 0;
+    }
+
+    .view-container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 3px 0;
+    }
+
+    .game-view {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 4x4 Grid */
+    .grid-board {
+      display: grid;
+      gap: 6px;
+      width: 100%;
+      height: 100%;
+      max-height: 70vh;
+      max-width: 820px;
+      padding: 6px;
+      background: #140326;
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .grid-4x4 {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+    }
+
+    /* 3x3 Grid */
+    .grid-3x3 {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      max-width: 660px;
+    }
+
+    /* Card Flip Structure */
+    .flip-card {
+      perspective: 800px;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.4s ease;
+      transform-style: preserve-3d;
+    }
+
+    .flip-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      text-align: center;
+    }
+
+    .face-front {
+      background: #1b0736;
+      border: 1px solid #7c3aed;
+      color: #ffffff;
+    }
+
+    .flip-card:hover .face-front {
+      border-color: #06ffa5;
+    }
+
+    .face-front .pinyin {
+      font-size: 11px;
+      color: #67e8f9;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .face-front .hanzi {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+      line-height: 1.1;
+    }
+
+    .face-back {
+      background: #250d4f;
+      border: 1px solid #10b981;
+      transform: rotateY(180deg);
+      color: #f8fafc;
+    }
+
+    .face-back .tag {
+      font-size: 9px;
+      color: #34d399;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .face-back .meaning {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 0 3px;
+      line-height: 1.2;
+    }
+
+    .face-back .chinese-echo {
+      font-size: 10px;
+      color: #c084fc;
+      margin-top: 3px;
+    }
+
+    .face-back.poison-blast {
+      background: #7f1d1d !important;
+      border: 2px solid #ef4444 !important;
+    }
+
+    .flashcards-view {
+      width: 100%;
+      height: 100%;
+      max-width: 760px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .fc-box {
+      width: 100%;
+      max-width: 480px;
+      height: 240px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .fc-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .fc-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .fc-face {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .fc-front {
+      background: linear-gradient(135deg, #240a49 0%, #15032d 100%);
+      border: 2px solid #a855f7;
+    }
+
+    .fc-back {
+      background: linear-gradient(135deg, #132a42 0%, #0d1b2a 100%);
+      border: 2px solid #06b6d4;
+      transform: rotateY(180deg);
+    }
+
+    .fc-pinyin {
+      font-size: 20px;
+      color: #67e8f9;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .fc-hanzi {
+      font-size: 52px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+    }
+
+    .fc-tap-hint {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #c084fc;
+      background: rgba(147, 51, 234, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .fc-en {
+      font-size: 28px;
+      font-weight: 800;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      padding: 0 10px;
+    }
+
+    .fc-cn-sub {
+      font-size: 16px;
+      color: #e2e8f0;
+      margin-top: 4px;
+    }
+
+    .fc-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .fc-btn {
+      background: #2a0b58;
+      border: 1px solid #a855f7;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .fc-btn:hover {
+      background: #491297;
+    }
+
+    .fc-counter {
+      font-size: 13px;
+      font-weight: bold;
+      color: #06ffa5;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    /* Shake Animation */
+    @keyframes shatterShake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-6px, 5px); }
+      40% { transform: translate(6px, -5px); }
+      60% { transform: translate(-4px, -3px); }
+      80% { transform: translate(4px, 3px); }
+      100% { transform: translate(0, 0); }
+    }
+    .shatter-shake {
+      animation: shatterShake 0.6s ease-in-out;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      z-index: 999;
+    }
+
+    .modal-overlay.open {
+      display: flex !important;
+    }
+
+    .modal-box {
+      background: #17042f;
+      border: 1px solid #a855f7;
+      width: 100%;
+      max-width: 460px;
+      border-radius: 14px;
+      padding: 16px;
+      color: #e2e8f0;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #6b21a8;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #06ffa5;
+    }
+
+    .modal-close {
+      background: #340c66;
+      border: none;
+      color: #d8b4fe;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .modal-body {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .rule-card {
+      background: #230847;
+      border: 1px solid #7c3aed;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      background: #7c3aed;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2e0854;
+      border: 1px solid #c084fc;
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 10px;
+      color: #a855f7;
+      padding: 2px 0;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="brand-area" onclick="switchView('game')">
+      <span class="brand-icon">🧪</span>
+      <span class="brand-title">Poison Candy</span>
+      <span class="brand-ver">v4.0</span>
+    </div>
+
+    <!-- Mode Selector: Game Duel vs Flashcards Review -->
+    <div class="nav-tabs">
+      <button id="navGameBtn" class="nav-tab-btn active" onclick="switchView('game')">
+        <span>⚔️</span> Duel
+      </button>
+      <button id="navFcBtn" class="nav-tab-btn" onclick="switchView('flashcards')">
+        <span>📇</span> Flashcards
+      </button>
+    </div>
+
+    <!-- Quick Action Toolbar -->
+    <div class="action-btn-group">
+      <div class="bgm-control-wrap">
+        <button id="bgmBtn" class="btn-chip" style="border:none; padding:2px 4px;" onclick="toggleBGM()">
+          <span id="bgmIcon">🎵</span>
+        </button>
+        <select id="bgmThemeSelect" class="bgm-select" onchange="changeBgmTheme(this.value)" title="Choose Stardew Valley Style BGM">
+          <option value="spring">🌾 Stardew Spring</option>
+          <option value="autumn">🍂 Autumn Harvest</option>
+          <option value="winter">❄️ Winter Starlight</option>
+        </select>
+        <input type="range" id="bgmVolumeSlider" min="0" max="1" step="0.05" value="0.5" oninput="setBgmVolume(this.value)" title="BGM Volume">
+        <span id="bgmVolText" style="font-size:10px; color:#c084fc; min-width:28px;">50%</span>
+      </div>
+      <button class="btn-chip" onclick="openRulesModal()">
+        <span>📜</span> Rules
+      </button>
+      <button class="btn-chip danger" onclick="initGame()">
+        <span>🔄</span> Reset
+      </button>
+    </div>
+  </header>
+
+  <section class="selector-bar">
+    <!-- Row 1: Grade Selection + Grid Size Switcher (3x3 vs 4x4) -->
+    <div class="pills-row">
+      <span class="pills-label">Grade:</span>
+      <div class="pills-container" id="gradePillsContainer">
+        <!-- Rendered by JS: G2, G4, G6, G8 -->
+      </div>
+
+      <div class="grid-toggle-box" title="Switch Board Size">
+        <button id="grid3Btn" class="grid-btn" onclick="setGridSize(3)">3×3</button>
+        <button id="grid4Btn" class="grid-btn active" onclick="setGridSize(4)">4×4</button>
+      </div>
+    </div>
+
+    <!-- Row 2: Lesson Selection (L1, L2, L3...) -->
+    <div class="pills-row">
+      <span class="pills-label">Lesson:</span>
+      <div class="pills-container" id="lessonPillsContainer">
+        <!-- Injected dynamically based on selected grade -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Player Turn Header (Duel Mode Only) -->
+  <section id="playersBar" class="players-bar">
+    <div id="p1Card" class="player-card active-p1">
+      <div class="p-meta">
+        <div class="p-avatar p1-avatar">P1</div>
+        <div>
+          <div class="p-title" style="color:#67e8f9;">Player 1</div>
+          <div id="p1Status" class="p-status">Secretly picking poison...</div>
+        </div>
+      </div>
+      <div id="p1Indicator">⏳</div>
+    </div>
+
+    <div id="p2Card" class="player-card">
+      <div class="p-meta">
+        <div class="p-avatar p2-avatar">P2</div>
+        <div>
+          <div class="p-title" style="color:#fcd34d;">Player 2</div>
+          <div id="p2Status" class="p-status">Waiting...</div>
+        </div>
+      </div>
+      <div id="p2Indicator">🙈</div>
+    </div>
+  </section>
+
+  <!-- Instructional Banner -->
+  <div id="instructionBanner" class="instruction-strip">
+    <span id="bannerText">Step 1: Player 1, secretly click any card to prime your Poison Candy!</span>
+  </div>
+
+  <main class="view-container">
+    <!-- View 1: Poison Candy Duel (Grid 3x3 or 4x4) -->
+    <div id="gameView" class="game-view">
+      <div id="gridContainer" class="grid-board grid-4x4">
+        <!-- Dynamically injected cards -->
+      </div>
+    </div>
+
+    <!-- View 2: Flashcards Review Mode -->
+    <div id="flashcardsView" class="flashcards-view">
+      <div class="fc-box" onclick="flipFlashcard()">
+        <div id="fcInner" class="fc-inner">
+          <div class="fc-face fc-front">
+            <div id="fcPinyin" class="fc-pinyin">pīn yīn</div>
+            <div id="fcHanzi" class="fc-hanzi">汉字</div>
+            <div class="fc-tap-hint">👆 Click card to flip meaning</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div style="font-size: 11px; color:#34d399; font-weight:bold; text-transform:uppercase; margin-bottom:4px;">English Definition</div>
+            <div id="fcEn" class="fc-en">Meaning</div>
+            <div id="fcCnSub" class="fc-cn-sub">汉字 (pinyin)</div>
+            <div class="fc-tap-hint">👆 Click to flip back</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-controls">
+        <button class="fc-btn" onclick="prevFlashcard()">← Prev</button>
+        <span id="fcCounter" class="fc-counter">1 / 10</span>
+        <button class="fc-btn" onclick="nextFlashcard()">Next →</button>
+        <button class="fc-btn" style="background:#155e75; border-color:#06b6d4;" onclick="shuffleFlashcards()">🔀 Shuffle</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>Poison Candy & Flashcards • Fully Offline & Firewall Safe</span>
+  </footer>
+
+  <!-- Rules Modal -->
+  <div id="rulesModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><span>📜</span> Game & Review Rules</div>
+        <button class="modal-close" onclick="closeRulesModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="rule-card">
+          <strong style="color:#67e8f9;">1. Review Mode (Flashcards):</strong>
+          Use the top "📇 Flashcards" button to practice pronunciation and English meanings before dueling!
+        </div>
+        <div class="rule-card">
+          <strong style="color:#fcd34d;">2. Secret Poison Priming:</strong>
+          In Duel Mode, Player 1 secretly clicks 1 candy to set poison (P2 looks away). Next, Player 2 secretly clicks 1 candy.
+        </div>
+        <div class="rule-card">
+          <strong style="color:#f87171;">3. Duel & Glass Shatter:</strong>
+          Players take turns saying the English meaning out loud before flipping. If a player flips any poison candy, the glass bottle shatters with sound and they lose!
+        </div>
+      </div>
+      <button class="btn-full" onclick="closeRulesModal()">Got It!</button>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="gameOverModal" class="modal-overlay">
+    <div class="modal-box" style="text-align: center; border: 2px solid #ef4444; background:#1b0511;">
+      <div style="font-size: 40px; margin-bottom: 4px;">🧪💥☠️</div>
+      <h2 style="font-size: 22px; font-weight:900; color:#f87171; margin-bottom: 6px;">GAME OVER</h2>
+      <p style="font-size: 12px; color: #fecdd3; margin-bottom: 12px;">A poisonous flask shattered into pieces!</p>
+
+      <div id="winnerStatement" style="background:#3b0717; border:1px solid #ef4444; padding:8px; border-radius:8px; margin-bottom:12px;"></div>
+
+      <div style="background:#260533; border:1px solid #7c3aed; padding:8px; border-radius:8px; margin-bottom:12px;">
+        <div style="font-size: 11px; color:#c084fc;">Triggered Poison Word:</div>
+        <div id="poisonWordRevealed" style="font-size: 18px; font-weight:900; color:#fcd34d; margin-top:2px;"></div>
+      </div>
+
+      <button class="btn-full" onclick="initGame()" style="background:#059669;">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Message</div>
+
+  <script>
+    const VOCAB_DATABASE = {
+      g2: {
+        label: "G2",
+        lessons: [
+          {
+            name: "Lesson 1",
+            words: [
+              { cn: "好", pinyin: "hǎo", en: "Good / Fine" },
+              { cn: "很", pinyin: "hěn", en: "Very" },
+              { cn: "谢谢", pinyin: "xiè xie", en: "Thank you / Thanks" }
+            ]
+          },
+          {
+            name: "Lesson 2",
+            words: [
+              { cn: "这", pinyin: "zhè", en: "This" },
+              { cn: "是", pinyin: "shì", en: "To be / Is / Am / Are" },
+              { cn: "谁", pinyin: "shéi", en: "Who / Whom" },
+              { cn: "弟弟", pinyin: "dì di", en: "Younger brother" }
+            ]
+          },
+          {
+            name: "Lesson 3",
+            words: [
+              { cn: "在", pinyin: "zài", en: "At / In / On" },
+              { cn: "书", pinyin: "shū", en: "Book" },
+              { cn: "哪里", pinyin: "nǎ lǐ", en: "Where" },
+              { cn: "书包", pinyin: "shū bāo", en: "Schoolbag / Backpack" },
+              { cn: "它们", pinyin: "tā men", en: "They / Them (objects/animals)" },
+              { cn: "里", pinyin: "lǐ", en: "Inside / In" }
+            ]
+          },
+          {
+            name: "Lesson 4",
+            words: [
+              { cn: "没有", pinyin: "méi yǒu", en: "Do not have / Without" },
+              { cn: "铅笔", pinyin: "qiān bǐ", en: "Pencil" },
+              { cn: "可以", pinyin: "kě yǐ", en: "Can / May" },
+              { cn: "借", pinyin: "jiè", en: "To borrow / To lend" },
+              { cn: "支", pinyin: "zhī", en: "Measure word for pens/pencils" }
+            ]
+          },
+          {
+            name: "Lesson 5",
+            words: [
+              { cn: "那", pinyin: "nà", en: "That" },
+              { cn: "家", pinyin: "jiā", en: "Family / Home" },
+              { cn: "吗", pinyin: "ma", en: "Question particle" },
+              { cn: "对", pinyin: "duì", en: "Correct / Right" }
+            ]
+          },
+          {
+            name: "Lesson 6",
+            words: [
+              { cn: "看", pinyin: "kàn", en: "Look / Watch / See" },
+              { cn: "彩虹", pinyin: "cǎi hóng", en: "Rainbow" },
+              { cn: "什么", pinyin: "shén me", en: "What" },
+              { cn: "看到", pinyin: "kàn dào", en: "To see / Catch sight of" }
+            ]
+          },
+          {
+            name: "Lesson 7",
+            words: [
+              { cn: "今天", pinyin: "jīn tiān", en: "Today" },
+              { cn: "晴天", pinyin: "qíng tiān", en: "Sunny day" },
+              { cn: "应该", pinyin: "yīng gāi", en: "Should / Ought to" },
+              { cn: "外面", pinyin: "wài miàn", en: "Outside" },
+              { cn: "玩", pinyin: "wán", en: "To play" }
+            ]
+          }
+        ]
+      },
+      g4: {
+        label: "G4",
+        lessons: [
+          {
+            name: "Lesson 1",
+            words: [
+              { cn: "下午", pinyin: "xià wǔ", en: "Afternoon" },
+              { cn: "学校", pinyin: "xué xiào", en: "School" },
+              { cn: "怎么样", pinyin: "zěn me yàng", en: "How about / How is it" },
+              { cn: "还可以", pinyin: "hái kě yǐ", en: "Not bad / Fairly good" },
+              { cn: "今天", pinyin: "jīn tiān", en: "Today" }
+            ]
+          },
+          {
+            name: "Lesson 2",
+            words: [
+              { cn: "这个", pinyin: "zhè ge", en: "This one" },
+              { cn: "周末", pinyin: "zhōu mò", en: "Weekend" },
+              { cn: "干", pinyin: "gàn", en: "To do" },
+              { cn: "干什么", pinyin: "gàn shén me", en: "What to do / What doing" },
+              { cn: "看望", pinyin: "kàn wàng", en: "To visit / Call on" },
+              { cn: "爷爷", pinyin: "yé ye", en: "Grandfather (paternal)" },
+              { cn: "奶奶", pinyin: "nǎi nai", en: "Grandmother (paternal)" },
+              { cn: "星期六", pinyin: "xīng qī liù", en: "Saturday" },
+              { cn: "星期天", pinyin: "xīng qī tiān", en: "Sunday" },
+              { cn: "住", pinyin: "zhù", en: "To live / Reside" },
+              { cn: "哪里", pinyin: "nǎ lǐ", en: "Where" }
+            ]
+          },
+          {
+            name: "Lesson 3",
+            words: [
+              { cn: "为什么", pinyin: "wèi shén me", en: "Why" },
+              { cn: "回", pinyin: "huí", en: "To return / Go back" },
+              { cn: "房间", pinyin: "fáng jiān", en: "Room" },
+              { cn: "语法书", pinyin: "yǔ fǎ shū", en: "Grammar book" },
+              { cn: "忘", pinyin: "wàng", en: "To forget" },
+              { cn: "桌子", pinyin: "zhuō zi", en: "Table / Desk" },
+              { cn: "快", pinyin: "kuài", en: "Fast / Quick / Hurry" },
+              { cn: "拿", pinyin: "ná", en: "To take / Hold / Fetch" }
+            ]
+          },
+          {
+            name: "Lesson 4",
+            words: [
+              { cn: "确定", pinyin: "què dìng", en: "Certain / Sure / Confirm" },
+              { cn: "怎么", pinyin: "zěn me", en: "How" },
+              { cn: "回答", pinyin: "huí dá", en: "To answer / Reply" },
+              { cn: "不确定", pinyin: "bù què dìng", en: "Uncertain / Unsure" },
+              { cn: "问题", pinyin: "wèn tí", en: "Question / Problem" },
+              { cn: "很", pinyin: "hěn", en: "Very" },
+              { cn: "容易", pinyin: "róng yì", en: "Easy / Simple" },
+              { cn: "解决", pinyin: "jiě jué", en: "To solve / Settle" }
+            ]
+          },
+          {
+            name: "Lesson 5",
+            words: [
+              { cn: "晚餐", pinyin: "wǎn cān", en: "Dinner / Supper" },
+              { cn: "吃", pinyin: "chī", en: "To eat" },
+              { cn: "炸鸡", pinyin: "zhá jī", en: "Fried chicken" },
+              { cn: "太", pinyin: "tài", en: "Too / Extremely" },
+              { cn: "太好了", pinyin: "tài hǎo le", en: "Great! / Wonderful!" },
+              { cn: "摆", pinyin: "bǎi", en: "To set / Place / Arrange" }
+            ]
+          },
+          {
+            name: "Lesson 6",
+            words: [
+              { cn: "昨晚", pinyin: "zuó wǎn", en: "Last night" },
+              { cn: "听到", pinyin: "tīng dào", en: "To hear" },
+              { cn: "雷声", pinyin: "léi shēng", en: "Thunder sound" },
+              { cn: "声音", pinyin: "shēng yīn", en: "Sound / Voice" },
+              { cn: "太大了", pinyin: "tài dà le", en: "Too loud / Too big" },
+              { cn: "睡", pinyin: "shuì", en: "To sleep" },
+              { cn: "睡不着", pinyin: "shuì bù zháo", en: "Cannot fall asleep" }
+            ]
+          },
+          {
+            name: "Lesson 7",
+            words: [
+              { cn: "明天", pinyin: "míng tiān", en: "Tomorrow" },
+              { cn: "家", pinyin: "jiā", en: "Family / Home" },
+              { cn: "一家人", pinyin: "yī jiā rén", en: "The whole family" },
+              { cn: "海滩", pinyin: "hǎi tān", en: "Beach" },
+              { cn: "可能", pinyin: "kě néng", en: "Maybe / Possible" },
+              { cn: "也", pinyin: "yě", en: "Also / Too" },
+              { cn: "去", pinyin: "qù", en: "To go" }
+            ]
+          }
+        ]
+      },
+      g6: {
+        label: "G6",
+        lessons: [
+          {
+            name: "Lesson 1",
+            words: [
+              { cn: "新", pinyin: "xīn", en: "New" },
+              { cn: "老师", pinyin: "lǎo shī", en: "Teacher" },
+              { cn: "认识", pinyin: "rèn shi", en: "To know / Recognize / Meet" },
+              { cn: "您", pinyin: "nín", en: "You (polite/respectful)" },
+              { cn: "也", pinyin: "yě", en: "Also / Too" },
+              { cn: "高兴", pinyin: "gāo xìng", en: "Glad / Happy" }
+            ]
+          },
+          {
+            name: "Lesson 2",
+            words: [
+              { cn: "叔叔", pinyin: "shū shu", en: "Uncle" },
+              { cn: "工程师", pinyin: "gōng chéng shī", en: "Engineer" },
+              { cn: "对吧", pinyin: "duì ba", en: "Right? / Isn't it?" },
+              { cn: "儿子", pinyin: "ér zi", en: "Son" },
+              { cn: "所", pinyin: "suǒ", en: "Measure word for universities/buildings" },
+              { cn: "大学", pinyin: "dà xué", en: "University / College" },
+              { cn: "教授", pinyin: "jiào shòu", en: "Professor" },
+              { cn: "是的", pinyin: "shì de", en: "Yes / That's right" }
+            ]
+          },
+          {
+            name: "Lesson 3",
+            words: [
+              { cn: "看到", pinyin: "kàn dào", en: "To see / Catch sight of" },
+              { cn: "夹克", pinyin: "jiá kè", en: "Jacket" },
+              { cn: "衣柜", pinyin: "yī guì", en: "Wardrobe / Closet" },
+              { cn: "刚", pinyin: "gāng", en: "Just / Exactly" },
+              { cn: "没有", pinyin: "méi yǒu", en: "Did not / Without" }
+            ]
+          },
+          {
+            name: "Lesson 4",
+            words: [
+              { cn: "那", pinyin: "nà", en: "That" },
+              { cn: "非常", pinyin: "fēi cháng", en: "Very / Extremely" },
+              { cn: "有趣", pinyin: "yǒu qù", en: "Interesting / Fun" },
+              { cn: "课", pinyin: "kè", en: "Class / Lesson" },
+              { cn: "学习", pinyin: "xué xí", en: "To study / Learn" },
+              { cn: "全球变暖", pinyin: "quán qiú biàn nuǎn", en: "Global warming" },
+              { cn: "知识", pinyin: "zhī shi", en: "Knowledge" },
+              { cn: "帮助", pinyin: "bāng zhù", en: "To help / Aid" },
+              { cn: "提高", pinyin: "tí gāo", en: "To improve / Enhance" }
+            ]
+          },
+          {
+            name: "Lesson 5",
+            words: [
+              { cn: "大约", pinyin: "dà yuē", en: "Approximately / About" },
+              { cn: "早上", pinyin: "zǎo shang", en: "Morning" },
+              { cn: "起床", pinyin: "qǐ chuáng", en: "Get out of bed / Wake up" },
+              { cn: "刷牙", pinyin: "shuā yá", en: "Brush teeth" },
+              { cn: "洗脸", pinyin: "xǐ liǎn", en: "Wash face" },
+              { cn: "穿衣服", pinyin: "chuān yī fu", en: "Put on clothes" },
+              { cn: "做什么", pinyin: "zuò shén me", en: "Do what / What to do" }
+            ]
+          },
+          {
+            name: "Lesson 6",
+            words: [
+              { cn: "今天", pinyin: "jīn tiān", en: "Today" },
+              { cn: "冷", pinyin: "lěng", en: "Cold" },
+              { cn: "绝对", pinyin: "jué duì", en: "Absolutely / Definite" },
+              { cn: "既然", pinyin: "jì rán", en: "Since / Given that" },
+              { cn: "待", pinyin: "dāi", en: "To stay" },
+              { cn: "室内", pinyin: "shì nèi", en: "Indoor / Inside" },
+              { cn: "比", pinyin: "bǐ", en: "Compare / Than" },
+              { cn: "昨天", pinyin: "zuó tiān", en: "Yesterday" }
+            ]
+          },
+          {
+            name: "Lesson 7",
+            words: [
+              { cn: "下雨", pinyin: "xià yǔ", en: "To rain" },
+              { cn: "天空", pinyin: "tiān kōng", en: "Sky" },
+              { cn: "晴朗", pinyin: "qíng lǎng", en: "Sunny and clear" },
+              { cn: "阳光", pinyin: "yáng guāng", en: "Sunlight / Sunshine" },
+              { cn: "明媚", pinyin: "míng mèi", en: "Bright and beautiful" },
+              { cn: "手机", pinyin: "shǒu jī", en: "Mobile phone" },
+              { cn: "天气", pinyin: "tiān qì", en: "Weather" },
+              { cn: "应用程序", pinyin: "yìng yòng chéng xù", en: "Application / App" },
+              { cn: "预测", pinyin: "yù cè", en: "To forecast / Predict" },
+              { cn: "会", pinyin: "huì", en: "Will / Would" }
+            ]
+          }
+        ]
+      },
+      g8: {
+        label: "G8",
+        lessons: [
+          {
+            name: "Lesson 1 (Moving)",
+            words: [
+              { cn: "搬家", pinyin: "bān jiā", en: "To move house" },
+              { cn: "楼", pinyin: "lóu", en: "Building / Floor" },
+              { cn: "欢迎", pinyin: "huān yíng", en: "Welcome" },
+              { cn: "地铁", pinyin: "dì tiě", en: "Subway / Metro" },
+              { cn: "自行车", pinyin: "zì xíng chē", en: "Bicycle" },
+              { cn: "近", pinyin: "jìn", en: "Near / Close" },
+              { cn: "叔叔", pinyin: "shū shu", en: "Uncle" },
+              { cn: "礼物", pinyin: "lǐ wù", en: "Gift / Present" },
+              { cn: "参观", pinyin: "cān guān", en: "To visit / Tour" },
+              { cn: "沙发", pinyin: "shā fā", en: "Sofa" },
+              { cn: "椅子", pinyin: "yǐ zi", en: "Chair" },
+              { cn: "桌子", pinyin: "zhuō zi", en: "Table / Desk" },
+              { cn: "可爱", pinyin: "kě ài", en: "Cute / Lovely" },
+              { cn: "照片", pinyin: "zhào piàn", en: "Photo / Picture" },
+              { cn: "小时候", pinyin: "xiǎo shí hou", en: "When young / In childhood" },
+              { cn: "离", pinyin: "lí", en: "Away from / Distance" }
+            ]
+          },
+          {
+            name: "Lesson 2 (Housework)",
+            words: [
+              { cn: "做家务", pinyin: "zuò jiā wù", en: "Do housework" },
+              { cn: "做饭", pinyin: "zuò fàn", en: "Cook a meal" },
+              { cn: "洗衣机", pinyin: "xǐ yī jī", en: "Washing machine" },
+              { cn: "毛巾", pinyin: "máo jīn", en: "Towel" },
+              { cn: "脏衣服", pinyin: "zāng yī fu", en: "Dirty clothes" },
+              { cn: "鞋子", pinyin: "xié zi", en: "Shoes" },
+              { cn: "放", pinyin: "fàng", en: "Put / Place" },
+              { cn: "轮流", pinyin: "lún liú", en: "Take turns" },
+              { cn: "很忙", pinyin: "hěn máng", en: "Very busy" },
+              { cn: "漂亮", pinyin: "piào liang", en: "Pretty / Beautiful" },
+              { cn: "干净", pinyin: "gān jìng", en: "Clean" },
+              { cn: "舒服", pinyin: "shū fu", en: "Comfortable" },
+              { cn: "通常", pinyin: "tōng cháng", en: "Usually / Normally" },
+              { cn: "打扫", pinyin: "dǎ sǎo", en: "Clean / Sweep" },
+              { cn: "房间", pinyin: "fáng jiān", en: "Room" },
+              { cn: "能干", pinyin: "néng gàn", en: "Capable / Competent" }
+            ]
+          },
+          {
+            name: "Lesson 3 (Hobbies)",
+            words: [
+              { cn: "运动", pinyin: "yùn dòng", en: "Sports / Exercise" },
+              { cn: "爱好", pinyin: "ài hào", en: "Hobby" },
+              { cn: "打篮球", pinyin: "dǎ lán qiú", en: "To play basketball" },
+              { cn: "队", pinyin: "duì", en: "Team" },
+              { cn: "练习", pinyin: "liàn xí", en: "To practice" },
+              { cn: "厉害", pinyin: "lì hai", en: "Awesome / Impressive" },
+              { cn: "比赛", pinyin: "bǐ sài", en: "Competition / Match" },
+              { cn: "第一名", pinyin: "dì-yī míng", en: "First place" },
+              { cn: "踢足球", pinyin: "tī zú qiú", en: "To play football (soccer)" },
+              { cn: "打排球", pinyin: "dǎ pái qiú", en: "To play volleyball" },
+              { cn: "打太极拳", pinyin: "dǎ tài jí quán", en: "To practice Tai Chi" },
+              { cn: "对……感兴趣", pinyin: "duì... gǎn xìng qù", en: "To be interested in" },
+              { cn: "但是", pinyin: "dàn shì", en: "But / However" },
+              { cn: "简单", pinyin: "jiǎn dān", en: "Simple / Easy" },
+              { cn: "教", pinyin: "jiāo", en: "To teach" },
+              { cn: "武术", pinyin: "wǔ shù", en: "Martial arts" },
+              { cn: "现在", pinyin: "xiàn zài", en: "Now" },
+              { cn: "休息", pinyin: "xiū xi", en: "To rest / Take a break" },
+              { cn: "弹钢琴", pinyin: "tán gāng qín", en: "To play the piano" },
+              { cn: "累", pinyin: "lèi", en: "Tired" },
+              { cn: "听音乐", pinyin: "tīng yīn yuè", en: "To listen to music" },
+              { cn: "乐队", pinyin: "yuè duì", en: "Band (music group)" },
+              { cn: "歌曲", pinyin: "gē qǔ", en: "Song" },
+              { cn: "好听", pinyin: "hǎo tīng", en: "Pleasant to hear / Sounds good" },
+              { cn: "弹吉他", pinyin: "tán jí tā", en: "To play the guitar" },
+              { cn: "以前", pinyin: "yǐ qián", en: "Before / In the past" },
+              { cn: "拉小提琴", pinyin: "lā xiǎo tí qín", en: "To play the violin" },
+              { cn: "坚持", pinyin: "jiān chí", en: "To persist / Keep doing" },
+              { cn: "进步", pinyin: "jìn bù", en: "To improve / Progress" },
+              { cn: "试", pinyin: "shì", en: "To try" },
+              { cn: "放音乐", pinyin: "fàng yīn yuè", en: "To play music" }
+            ]
+          }
+        ]
+      }
+    };
+
+    let currentView = 'game'; // 'game' or 'flashcards'
+    let currentGradeKey = 'g2';
+    let currentLessonIdx = 0;
+    let currentGridDimension = 4; // 3 for 3x3 (9 items), 4 for 4x4 (16 items)
+
+    const STAGE = {
+      P1_CHOOSE: 'P1_CHOOSE',
+      P2_CHOOSE: 'P2_CHOOSE',
+      PLAYING: 'PLAYING',
+      GAME_OVER: 'GAME_OVER'
+    };
+
+    let gameState = {
+      stage: STAGE.P1_CHOOSE,
+      p1PoisonIndex: null,
+      p2PoisonIndex: null,
+      activePlayer: 1,
+      flippedCards: new Set(),
+      boardCards: []
+    };
+
+    // Flashcard State
+    let flashcardDeck = [];
+    let currentCardIndex = 0;
+    let isCardFlipped = false;
+
+    let audioCtx = null;
+    let bgmTimer = null;
+    let bgmDroneOsc = null;
+    let bgmDroneGain = null;
+    let bgmSubOsc = null;
+    let bgmSubGain = null;
+    let bgmMasterGain = null;
+    let isBgmPlaying = false;
+    let currentBgmVolume = 0.5;
+    let currentBgmTheme = 'spring'; // 'spring', 'autumn', 'winter'
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Voice announcement using local browser SpeechSynthesis (works offline and firewall-safe)
+    function speakPrompt(text) {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel(); // Stop any pending speech
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.95;
+          utterance.pitch = 1.05;
+          utterance.volume = 1.0;
+          window.speechSynthesis.speak(utterance);
+        }
+      } catch (e) {}
+    }
+
+    function playFlipTone() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(750, now + 0.08);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      } catch (e) {}
+    }
+
+    // Soft & Melodic "Ding-Dong~" chime when poison is clicked
+    function playDingDongPoison() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        // "Ding" note (~880Hz / A5 with harmonics)
+        const dingOsc = ctx.createOscillator();
+        const dingGain = ctx.createGain();
+        dingOsc.type = "sine";
+        dingOsc.frequency.setValueAtTime(880, now);
+        dingGain.gain.setValueAtTime(0.35, now);
+        dingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+        dingOsc.connect(dingGain);
+        dingGain.connect(ctx.destination);
+        dingOsc.start(now);
+        dingOsc.stop(now + 0.95);
+
+        // "Dong" note (~587Hz / D5 with harmonics, slightly delayed)
+        const dongTime = now + 0.35;
+        const dongOsc = ctx.createOscillator();
+        const dongGain = ctx.createGain();
+        dongOsc.type = "sine";
+        dongOsc.frequency.setValueAtTime(587.33, dongTime);
+        dongGain.gain.setValueAtTime(0.4, dongTime);
+        dongGain.gain.exponentialRampToValueAtTime(0.0008, dongTime + 1.2);
+        dongOsc.connect(dongGain);
+        dongGain.connect(ctx.destination);
+        dongOsc.start(dongTime);
+        dongOsc.stop(dongTime + 1.25);
+      } catch (e) {}
+    }
+
+    // Musical note frequency helper
+    const NOTE_FREQ = {
+      C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+      C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00, C6: 1046.50
+    };
+
+    // Stardew Valley Style Themes & Melodic Palettes
+    const BGM_STYLES = {
+      spring: {
+        name: "🌾 Stardew Spring",
+        desc: "Breezy acoustic guitar & flute arpeggios, warm and pastoral",
+        baseDrone: NOTE_FREQ.C3,
+        subDrone: NOTE_FREQ.G3,
+        scale: [
+          NOTE_FREQ.C4, NOTE_FREQ.D4, NOTE_FREQ.E4, NOTE_FREQ.G4, NOTE_FREQ.A4,
+          NOTE_FREQ.C5, NOTE_FREQ.D5, NOTE_FREQ.E5, NOTE_FREQ.G5
+        ],
+        patterns: [
+          [0, 2, 4, 2], [1, 3, 5, 3], [0, 2, 3, 5], [4, 6, 7, 5]
+        ],
+        waveform: "triangle",
+        attack: 0.05,
+        decay: 1.4,
+        droneType: "sine",
+        stepDelay: 320
+      },
+      autumn: {
+        name: "🍂 Autumn Harvest",
+        desc: "Gentle cozy marimba and subtle mystical swells",
+        baseDrone: NOTE_FREQ.D3,
+        subDrone: NOTE_FREQ.A3,
+        scale: [
+          NOTE_FREQ.D4, NOTE_FREQ.F4, NOTE_FREQ.G4, NOTE_FREQ.A4, NOTE_FREQ.C5,
+          NOTE_FREQ.D5, NOTE_FREQ.F5, NOTE_FREQ.A5
+        ],
+        patterns: [
+          [0, 3, 2, 0], [1, 3, 5, 4], [3, 5, 7, 5], [0, 2, 4, 3]
+        ],
+        waveform: "sine",
+        attack: 0.03,
+        decay: 0.9,
+        droneType: "triangle",
+        stepDelay: 380
+      },
+      winter: {
+        name: "❄️ Winter Starlight",
+        desc: "Crystal glockenspiel chimes over a calm snowy drone",
+        baseDrone: NOTE_FREQ.E3,
+        subDrone: NOTE_FREQ.B3,
+        scale: [
+          NOTE_FREQ.E4, NOTE_FREQ.G4, NOTE_FREQ.A4, NOTE_FREQ.B4, NOTE_FREQ.D5,
+          NOTE_FREQ.E5, NOTE_FREQ.G5, NOTE_FREQ.B5, NOTE_FREQ.C6
+        ],
+        patterns: [
+          [0, 3, 5, 7], [1, 4, 6, 8], [5, 4, 2, 0], [2, 5, 7, 5]
+        ],
+        waveform: "sine",
+        attack: 0.01,
+        decay: 2.1,
+        droneType: "sine",
+        stepDelay: 440
+      }
+    };
+
+    function changeBgmTheme(themeKey) {
+      currentBgmTheme = themeKey;
+      const theme = BGM_STYLES[themeKey];
+      showToast(`BGM: ${theme.name}`);
+      if (isBgmPlaying) {
+        stopBGM();
+        startBGM();
+      }
+    }
+
+    function setBgmVolume(val) {
+      currentBgmVolume = parseFloat(val);
+      document.getElementById('bgmVolText').textContent = Math.round(currentBgmVolume * 100) + '%';
+      if (bgmMasterGain && audioCtx) {
+        bgmMasterGain.gain.setValueAtTime(currentBgmVolume * 0.45, audioCtx.currentTime);
+      }
+      if (currentBgmVolume > 0 && !isBgmPlaying) {
+        startBGM();
+      } else if (currentBgmVolume === 0 && isBgmPlaying) {
+        stopBGM();
+      }
+    }
+
+    function toggleBGM() {
+      if (isBgmPlaying) {
+        stopBGM();
+        showToast("BGM Paused");
+      } else {
+        if (currentBgmVolume === 0) {
+          setBgmVolume(0.5);
+          document.getElementById('bgmVolumeSlider').value = 0.5;
+        }
+        startBGM();
+        showToast(`Playing ${BGM_STYLES[currentBgmTheme].name} 🎵`);
+      }
+    }
+
+    function startBGM() {
+      try {
+        const ctx = getAudioContext();
+        if (isBgmPlaying) return;
+        isBgmPlaying = true;
+
+        const theme = BGM_STYLES[currentBgmTheme] || BGM_STYLES.spring;
+
+        // Master BGM gain node
+        bgmMasterGain = ctx.createGain();
+        bgmMasterGain.gain.setValueAtTime(currentBgmVolume * 0.45, ctx.currentTime);
+        bgmMasterGain.connect(ctx.destination);
+
+        // Low ambient drone
+        bgmDroneOsc = ctx.createOscillator();
+        bgmDroneGain = ctx.createGain();
+        bgmDroneOsc.type = theme.droneType;
+        bgmDroneOsc.frequency.setValueAtTime(theme.baseDrone, ctx.currentTime);
+        bgmDroneGain.gain.setValueAtTime(0.01, ctx.currentTime);
+        bgmDroneGain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 1.2);
+        bgmDroneOsc.connect(bgmDroneGain);
+        bgmDroneGain.connect(bgmMasterGain);
+        bgmDroneOsc.start();
+
+        // Harmonizing 5th drone
+        bgmSubOsc = ctx.createOscillator();
+        bgmSubGain = ctx.createGain();
+        bgmSubOsc.type = "sine";
+        bgmSubOsc.frequency.setValueAtTime(theme.subDrone, ctx.currentTime);
+        bgmSubGain.gain.setValueAtTime(0.01, ctx.currentTime);
+        bgmSubGain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 1.2);
+        bgmSubOsc.connect(bgmSubGain);
+        bgmSubGain.connect(bgmMasterGain);
+        bgmSubOsc.start();
+
+        // Stardew-style melodic arpeggios & chord progressions
+        let patternIdx = 0;
+        let stepIdx = 0;
+
+        function playArpStep() {
+          if (!isBgmPlaying) return;
+          try {
+            const now = ctx.currentTime;
+            const curPattern = theme.patterns[patternIdx % theme.patterns.length];
+            const noteIdx = curPattern[stepIdx % curPattern.length];
+            const freq = theme.scale[noteIdx % theme.scale.length];
+
+            // Primary Pluck / Bell Note
+            const noteOsc = ctx.createOscillator();
+            const noteGain = ctx.createGain();
+            noteOsc.type = theme.waveform;
+            noteOsc.frequency.setValueAtTime(freq, now);
+
+            // Shimmer / Soft Harmonics for crystalline Winter or warm Spring vibes
+            noteGain.gain.setValueAtTime(0.001, now);
+            noteGain.gain.linearRampToValueAtTime(0.2, now + theme.attack);
+            noteGain.gain.exponentialRampToValueAtTime(0.0001, now + theme.decay);
+
+            noteOsc.connect(noteGain);
+            noteGain.connect(bgmMasterGain);
+            noteOsc.start(now);
+            noteOsc.stop(now + theme.decay + 0.05);
+
+            // Occasional higher harmonic bell chime
+            if (Math.random() < 0.28) {
+              const sparkleOsc = ctx.createOscillator();
+              const sparkleGain = ctx.createGain();
+              sparkleOsc.type = "sine";
+              sparkleOsc.frequency.setValueAtTime(freq * 2, now + 0.05);
+              sparkleGain.gain.setValueAtTime(0.001, now + 0.05);
+              sparkleGain.gain.linearRampToValueAtTime(0.07, now + 0.08);
+              sparkleGain.gain.exponentialRampToValueAtTime(0.0001, now + theme.decay * 0.8);
+              sparkleOsc.connect(sparkleGain);
+              sparkleGain.connect(bgmMasterGain);
+              sparkleOsc.start(now + 0.05);
+              sparkleOsc.stop(now + theme.decay + 0.1);
+            }
+
+            stepIdx++;
+            if (stepIdx >= curPattern.length) {
+              stepIdx = 0;
+              patternIdx++;
+            }
+          } catch (e) {}
+
+          // Slight humanized rhythmic variation
+          const jitter = (Math.random() - 0.5) * 30;
+          bgmTimer = setTimeout(playArpStep, Math.max(180, theme.stepDelay + jitter));
+        }
+
+        playArpStep();
+        updateBgmBtn(true);
+      } catch (e) {}
+    }
+
+    function stopBGM() {
+      isBgmPlaying = false;
+      if (bgmTimer) clearTimeout(bgmTimer);
+      if (audioCtx) {
+        try {
+          if (bgmDroneGain) bgmDroneGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+          if (bgmSubGain) bgmSubGain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+          setTimeout(() => {
+            if (bgmDroneOsc) {
+              bgmDroneOsc.stop();
+              bgmDroneOsc.disconnect();
+              bgmDroneOsc = null;
+            }
+            if (bgmSubOsc) {
+              bgmSubOsc.stop();
+              bgmSubOsc.disconnect();
+              bgmSubOsc = null;
+            }
+          }, 250);
+        } catch (e) {}
+      }
+      updateBgmBtn(false);
+    }
+
+    function updateBgmBtn(active) {
+      const icon = document.getElementById('bgmIcon');
+      const btn = document.getElementById('bgmBtn');
+      if (active) {
+        icon.textContent = '🔊';
+        btn.classList.add('bgm-active');
+      } else {
+        icon.textContent = '🔇';
+        btn.classList.remove('bgm-active');
+      }
+    }
+
+    function renderGradePills() {
+      const container = document.getElementById('gradePillsContainer');
+      container.innerHTML = '';
+
+      Object.keys(VOCAB_DATABASE).forEach(gradeKey => {
+        const btn = document.createElement('button');
+        btn.className = `pill-btn ${gradeKey === currentGradeKey ? 'active' : ''}`;
+        btn.textContent = VOCAB_DATABASE[gradeKey].label;
+        btn.onclick = () => selectGrade(gradeKey);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectGrade(gradeKey) {
+      currentGradeKey = gradeKey;
+      currentLessonIdx = 0;
+      renderGradePills();
+      renderLessonPills();
+      syncCurrentLessonData();
+      showToast(`Selected ${VOCAB_DATABASE[gradeKey].label} 📚`);
+    }
+
+    function renderLessonPills() {
+      const container = document.getElementById('lessonPillsContainer');
+      container.innerHTML = '';
+
+      const lessons = VOCAB_DATABASE[currentGradeKey].lessons;
+      lessons.forEach((l, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `pill-btn ${idx === currentLessonIdx ? 'active' : ''}`;
+        btn.textContent = `L${idx + 1}`;
+        btn.title = l.name;
+        btn.onclick = () => selectLesson(idx);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectLesson(idx) {
+      currentLessonIdx = idx;
+      renderLessonPills();
+      syncCurrentLessonData();
+      showToast(`Switched to ${VOCAB_DATABASE[currentGradeKey].lessons[idx].name}`);
+    }
+
+    function setGridSize(dim) {
+      currentGridDimension = dim;
+      document.getElementById('grid3Btn').classList.toggle('active', dim === 3);
+      document.getElementById('grid4Btn').classList.toggle('active', dim === 4);
+
+      const gridBox = document.getElementById('gridContainer');
+      if (dim === 3) {
+        gridBox.className = 'grid-board grid-3x3';
+      } else {
+        gridBox.className = 'grid-board grid-4x4';
+      }
+      initGame();
+      showToast(`Board size set to ${dim}×${dim} (${dim * dim} cards)`);
+    }
+
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // Prioritize earlier lessons (e.g. Lesson 3 fills from Lesson 2, then Lesson 1)
+    function getPreparedBoardList(targetCount) {
+      const currentLesson = VOCAB_DATABASE[currentGradeKey].lessons[currentLessonIdx];
+      let primaryWords = [...currentLesson.words];
+
+      // If we already have enough words, shuffle and take targetCount
+      if (primaryWords.length >= targetCount) {
+        return shuffle(primaryWords).slice(0, targetCount);
+      }
+
+      const existingKeys = new Set(primaryWords.map(w => w.cn));
+      const pool = [];
+      const allLessons = VOCAB_DATABASE[currentGradeKey].lessons;
+
+      // 1. Search backwards through previous lessons in the same grade (Lesson N-1 down to Lesson 0)
+      for (let idx = currentLessonIdx - 1; idx >= 0; idx--) {
+        allLessons[idx].words.forEach(w => {
+          if (!existingKeys.has(w.cn)) {
+            pool.push(w);
+            existingKeys.add(w.cn);
+          }
+        });
+      }
+
+      // 2. If still needed, look at subsequent lessons in the current grade
+      if (primaryWords.length + pool.length < targetCount) {
+        for (let idx = currentLessonIdx + 1; idx < allLessons.length; idx++) {
+          allLessons[idx].words.forEach(w => {
+            if (!existingKeys.has(w.cn)) {
+              pool.push(w);
+              existingKeys.add(w.cn);
+            }
+          });
+        }
+      }
+
+      // 3. If still needed, borrow from earlier grades
+      if (primaryWords.length + pool.length < targetCount) {
+        const gradeKeys = Object.keys(VOCAB_DATABASE);
+        for (const gk of gradeKeys) {
+          if (gk !== currentGradeKey) {
+            VOCAB_DATABASE[gk].lessons.forEach(les => {
+              les.words.forEach(w => {
+                if (!existingKeys.has(w.cn)) {
+                  pool.push(w);
+                  existingKeys.add(w.cn);
+                }
+              });
+            });
+          }
+        }
+      }
+
+      const needed = targetCount - primaryWords.length;
+      const combined = primaryWords.concat(pool.slice(0, needed));
+
+      return shuffle(combined);
+    }
+
+    function initGame() {
+      closeRulesModal();
+      document.getElementById('gameOverModal').classList.remove('open');
+
+      gameState.stage = STAGE.P1_CHOOSE;
+      gameState.p1PoisonIndex = null;
+      gameState.p2PoisonIndex = null;
+      gameState.activePlayer = 1;
+      gameState.flippedCards.clear();
+
+      const targetCount = currentGridDimension * currentGridDimension;
+      gameState.boardCards = getPreparedBoardList(targetCount);
+
+      updatePlayerTurnUI();
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('gridContainer');
+      container.innerHTML = '';
+
+      gameState.boardCards.forEach((item, index) => {
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'flip-card';
+        cardWrapper.onclick = () => handleCardClick(index);
+
+        const isFlipped = gameState.flippedCards.has(index);
+
+        const cardInner = document.createElement('div');
+        cardInner.className = `flip-inner ${isFlipped ? 'is-flipped' : ''}`;
+        cardInner.id = `card-inner-${index}`;
+
+        // Front Face
+        const frontFace = document.createElement('div');
+        frontFace.className = 'flip-face face-front';
+        frontFace.innerHTML = `
+          <div class="pinyin">${item.pinyin}</div>
+          <div class="hanzi">${item.cn}</div>
+        `;
+
+        // Back Face
+        const backFace = document.createElement('div');
+        backFace.className = 'flip-face face-back';
+        backFace.innerHTML = `
+          <div class="tag">Meaning</div>
+          <div class="meaning">${item.en}</div>
+          <div class="chinese-echo">${item.cn}</div>
+        `;
+
+        cardInner.appendChild(frontFace);
+        cardInner.appendChild(backFace);
+        cardWrapper.appendChild(cardInner);
+        container.appendChild(cardWrapper);
+      });
+    }
+
+    function handleCardClick(index) {
+      if (gameState.stage === STAGE.P1_CHOOSE) {
+        gameState.p1PoisonIndex = index;
+        playFlipTone();
+        showToast(`Player 1 primed poison candy #${index + 1}! 🧪`);
+        gameState.stage = STAGE.P2_CHOOSE;
+        updatePlayerTurnUI();
+        speakPrompt("Player 1 has chosen the poison.");
+        return;
+      }
+
+      if (gameState.stage === STAGE.P2_CHOOSE) {
+        if (index === gameState.p1PoisonIndex) {
+          showToast(`⚠️ Card already has an incantation! Choose another.`);
+          return;
+        }
+        gameState.p2PoisonIndex = index;
+        playFlipTone();
+        showToast(`Player 2 primed poison! The duel begins! ⚔️`);
+        gameState.stage = STAGE.PLAYING;
+        gameState.activePlayer = 1;
+        updatePlayerTurnUI();
+        speakPrompt("Player 2 has chosen the poison. Please read the word aloud.");
+        return;
+      }
+
+      if (gameState.stage === STAGE.PLAYING) {
+        if (gameState.flippedCards.has(index)) return;
+
+        flipCardVisual(index);
+
+        const isP1Poison = (index === gameState.p1PoisonIndex);
+        const isP2Poison = (index === gameState.p2PoisonIndex);
+
+        if (isP1Poison || isP2Poison) {
+          handlePoisonHit(index, isP1Poison, isP2Poison);
+          return;
+        }
+
+        playFlipTone();
+        gameState.activePlayer = (gameState.activePlayer === 1) ? 2 : 1;
+        updatePlayerTurnUI();
+      }
+    }
+
+    function flipCardVisual(index) {
+      gameState.flippedCards.add(index);
+      const inner = document.getElementById(`card-inner-${index}`);
+      if (inner) inner.classList.add('is-flipped');
+    }
+
+    function handlePoisonHit(index, isP1Poison, isP2Poison) {
+      gameState.stage = STAGE.GAME_OVER;
+      playDingDongPoison(); // Gentle dingdong chime instead of harsh glass shatter
+
+      const mainGrid = document.getElementById('gridContainer');
+      mainGrid.classList.add('shatter-shake');
+      setTimeout(() => mainGrid.classList.remove('shatter-shake'), 650);
+
+      const inner = document.getElementById(`card-inner-${index}`);
+      const backFace = inner ? inner.querySelector('.face-back') : null;
+      if (backFace) {
+        backFace.classList.add('poison-blast');
+        backFace.innerHTML = `
+          <div style="font-size:10px; font-weight:900; color:#fecdd3;">POISON! ☠️</div>
+          <div style="font-size:16px; font-weight:900; color:#fff; margin:2px 0;">${gameState.boardCards[index].cn}</div>
+          <div style="font-size:11px; color:#fecdd3;">${gameState.boardCards[index].en}</div>
+        `;
+      }
+
+      const poisonedPlayer = gameState.activePlayer;
+      const winnerPlayer = (poisonedPlayer === 1) ? 2 : 1;
+      const cardObj = gameState.boardCards[index];
+
+      setTimeout(() => {
+        const gameOverModal = document.getElementById('gameOverModal');
+        const winnerStatement = document.getElementById('winnerStatement');
+        const poisonWordRevealed = document.getElementById('poisonWordRevealed');
+
+        let note = isP1Poison 
+          ? `Player ${poisonedPlayer} drank Player 1's secret potion!`
+          : `Player ${poisonedPlayer} drank Player 2's secret potion!`;
+
+        winnerStatement.innerHTML = `
+          <div style="color: #fca5a5; font-size: 13px;">Player ${poisonedPlayer} was Poisoned!</div>
+          <div style="font-size: 18px; color: #06ffa5; font-weight: 900; margin-top:2px;">🎉 Player ${winnerPlayer} Wins!</div>
+          <div style="font-size: 11px; color: #e9d5ff; margin-top: 4px;">${note}</div>
+        `;
+
+        poisonWordRevealed.innerHTML = `
+          <span>${cardObj.cn}</span>
+          <span style="font-size: 12px; color: #67e8f9; margin-left: 4px;">(${cardObj.pinyin})</span>
+          <div style="font-size: 12px; color: #e2e8f0; margin-top: 2px;">${cardObj.en}</div>
+        `;
+
+        gameOverModal.classList.add('open');
+      }, 500);
+    }
+
+    function updatePlayerTurnUI() {
+      const p1Card = document.getElementById('p1Card');
+      const p2Card = document.getElementById('p2Card');
+      const p1Status = document.getElementById('p1Status');
+      const p2Status = document.getElementById('p2Status');
+      const p1Indicator = document.getElementById('p1Indicator');
+      const p2Indicator = document.getElementById('p2Indicator');
+      const bannerText = document.getElementById('bannerText');
+
+      if (gameState.stage === STAGE.P1_CHOOSE) {
+        p1Card.className = 'player-card active-p1';
+        p2Card.className = 'player-card';
+        p1Status.innerHTML = '<span style="color:#67e8f9; font-weight:bold;">Secretly picking poison...</span>';
+        p2Status.textContent = 'Please look away';
+        p1Indicator.textContent = '⏳';
+        p2Indicator.textContent = '🙈';
+        bannerText.textContent = 'Step 1: Player 1, secretly click any candy to prime your poison!';
+      } else if (gameState.stage === STAGE.P2_CHOOSE) {
+        p1Card.className = 'player-card';
+        p2Card.className = 'player-card active-p2';
+        p1Status.innerHTML = '<span style="color:#34d399; font-weight:600;">Poison Primed ✓</span>';
+        p2Status.innerHTML = '<span style="color:#fcd34d; font-weight:bold;">Secretly picking poison...</span>';
+        p1Indicator.textContent = '🔒';
+        p2Indicator.textContent = '⏳';
+        bannerText.textContent = 'Step 2: Player 2, secretly click any candy to prime your poison!';
+      } else if (gameState.stage === STAGE.PLAYING) {
+        p1Indicator.textContent = '🔒';
+        p2Indicator.textContent = '🔒';
+        if (gameState.activePlayer === 1) {
+          p1Card.className = 'player-card active-p1';
+          p2Card.className = 'player-card';
+          p1Status.innerHTML = '<span style="color:#67e8f9; font-weight:bold;">👉 Turn to flip</span>';
+          p2Status.textContent = 'Waiting...';
+        } else {
+          p1Card.className = 'player-card';
+          p2Card.className = 'player-card active-p2';
+          p1Status.textContent = 'Waiting...';
+          p2Status.innerHTML = '<span style="color:#fcd34d; font-weight:bold;">👉 Turn to flip</span>';
+        }
+        bannerText.textContent = `Player ${gameState.activePlayer}'s Turn: Say the English meaning out loud before clicking!`;
+      }
+    }
+
+    function syncCurrentLessonData() {
+      const lesson = VOCAB_DATABASE[currentGradeKey].lessons[currentLessonIdx];
+      flashcardDeck = [...lesson.words];
+      currentCardIndex = 0;
+      isCardFlipped = false;
+      renderCurrentFlashcard();
+
+      if (currentView === 'game') {
+        initGame();
+      }
+    }
+
+    function renderCurrentFlashcard() {
+      if (!flashcardDeck || flashcardDeck.length === 0) return;
+      const card = flashcardDeck[currentCardIndex];
+
+      const pinyinEl = document.getElementById('fcPinyin');
+      const hanziEl = document.getElementById('fcHanzi');
+      const enEl = document.getElementById('fcEn');
+      const cnSubEl = document.getElementById('fcCnSub');
+      const counterEl = document.getElementById('fcCounter');
+      const innerEl = document.getElementById('fcInner');
+
+      // Reset flip
+      isCardFlipped = false;
+      innerEl.classList.remove('is-flipped');
+
+      pinyinEl.textContent = card.pinyin;
+      hanziEl.textContent = card.cn;
+      enEl.textContent = card.en;
+      cnSubEl.textContent = `${card.cn} (${card.pinyin})`;
+      counterEl.textContent = `${currentCardIndex + 1} / ${flashcardDeck.length}`;
+    }
+
+    function flipFlashcard() {
+      const innerEl = document.getElementById('fcInner');
+      isCardFlipped = !isCardFlipped;
+      playFlipTone();
+      if (isCardFlipped) {
+        innerEl.classList.add('is-flipped');
+      } else {
+        innerEl.classList.remove('is-flipped');
+      }
+    }
+
+    function nextFlashcard() {
+      if (flashcardDeck.length === 0) return;
+      currentCardIndex = (currentCardIndex + 1) % flashcardDeck.length;
+      renderCurrentFlashcard();
+      playFlipTone();
+    }
+
+    function prevFlashcard() {
+      if (flashcardDeck.length === 0) return;
+      currentCardIndex = (currentCardIndex - 1 + flashcardDeck.length) % flashcardDeck.length;
+      renderCurrentFlashcard();
+      playFlipTone();
+    }
+
+    function shuffleFlashcards() {
+      flashcardDeck = shuffle(flashcardDeck);
+      currentCardIndex = 0;
+      renderCurrentFlashcard();
+      showToast("Flashcards Shuffled! 🔀");
+    }
+
+    function switchView(viewName) {
+      currentView = viewName;
+      const gameView = document.getElementById('gameView');
+      const flashcardsView = document.getElementById('flashcardsView');
+      const navGameBtn = document.getElementById('navGameBtn');
+      const navFcBtn = document.getElementById('navFcBtn');
+      const playersBar = document.getElementById('playersBar');
+      const banner = document.getElementById('instructionBanner');
+
+      if (viewName === 'game') {
+        gameView.style.display = 'flex';
+        flashcardsView.style.display = 'none';
+        navGameBtn.classList.add('active');
+        navFcBtn.classList.remove('active');
+        playersBar.style.display = 'grid';
+        banner.style.display = 'block';
+        initGame();
+      } else {
+        gameView.style.display = 'none';
+        flashcardsView.style.display = 'flex';
+        navGameBtn.classList.remove('active');
+        navFcBtn.classList.add('active');
+        playersBar.style.display = 'none';
+        banner.style.display = 'none';
+        syncCurrentLessonData();
+      }
+    }
+
+    function openRulesModal() {
+      document.getElementById('rulesModal').classList.add('open');
+    }
+
+    function closeRulesModal() {
+      document.getElementById('rulesModal').classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // Auto Init on Load
+    window.addEventListener('load', () => {
+      renderGradePills();
+      renderLessonPills();
+      syncCurrentLessonData();
+      initGame();
+    });
+  </script>
+</body>
+</html>
